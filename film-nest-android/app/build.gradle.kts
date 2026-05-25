@@ -33,7 +33,11 @@ android {
 
         buildConfigField("String", "TMDB_API_KEY", "\"${localProperties["TMDB_API_KEY"]}\"")
         buildConfigField("String", "TMDB_BASE_URL", "\"${localProperties["TMDB_BASE_URL"]}\"")
-        buildConfigField("String", "TMDB_BASE_IMAGE_URL", "\"${localProperties["TMDB_BASE_IMAGE_URL"]}\"")
+        buildConfigField(
+            "String",
+            "TMDB_BASE_IMAGE_URL",
+            "\"${localProperties["TMDB_BASE_IMAGE_URL"]}\""
+        )
     }
 
     buildTypes {
@@ -61,6 +65,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.kotlinx.serialization.json)
+
+    // Coil (Image Loading)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
