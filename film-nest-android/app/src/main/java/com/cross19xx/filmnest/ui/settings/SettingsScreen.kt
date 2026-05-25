@@ -1,10 +1,10 @@
-package com.cross19xx.filmnest.ui.home
+package com.cross19xx.filmnest.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,10 +16,7 @@ import com.cross19xx.filmnest.core.theme.FilmNestTheme
 
 
 @Composable
-fun HomeScreen(
-    onViewMovieDetails: (movieId: String) -> Unit,
-    onViewSettings: () -> Unit
-) {
+fun SettingsScreen(onBackPressed: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -27,28 +24,17 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(stringResource(R.string.app_name))
-
-        Button(onClick = { onViewMovieDetails("Tarzan") }) {
-            Text("View movie details for Tarzan")
-        }
-
-        Button(onClick = { onViewMovieDetails("Jungle Book") }) {
-            Text("View movie details for Jungle Book")
-        }
-
-        Button(onClick = onViewSettings) {
-            Text("Settings")
+        Text("Settings Page")
+        OutlinedButton(onClick = onBackPressed) {
+            Text("Go back home")
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
+fun SettingsScreenPreview() {
     FilmNestTheme {
-        HomeScreen(
-            onViewSettings = { },
-            onViewMovieDetails = { }
-        )
+        SettingsScreen(onBackPressed = {})
     }
 }
