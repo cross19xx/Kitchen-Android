@@ -1,14 +1,13 @@
 package com.cross19xx.filmnest.data.repository
 
 import com.cross19xx.filmnest.BuildConfig
-import com.cross19xx.filmnest.core.network.RetrofitClient
 import com.cross19xx.filmnest.data.model.Genre
 import com.cross19xx.filmnest.data.model.Movie
 import com.cross19xx.filmnest.data.model.MovieDetail
 import com.cross19xx.filmnest.data.remote.TmdbApiService
+import javax.inject.Inject
 
-class MovieRepository {
-    private val api = RetrofitClient.instance.create(TmdbApiService::class.java)
+class MovieRepository @Inject constructor(private val api: TmdbApiService) {
 
     private companion object {
         const val IMAGE_BASE_URL = BuildConfig.TMDB_BASE_IMAGE_URL
