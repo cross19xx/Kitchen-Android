@@ -6,12 +6,16 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.cross19xx.filmnest.ui.details.MovieDetailsScreen
 import com.cross19xx.filmnest.ui.home.HomeScreen
+import com.cross19xx.filmnest.ui.home.HomeViewModel
 import com.cross19xx.filmnest.ui.settings.SettingsScreen
 
 private const val MOTION_DURATION = 220
@@ -36,11 +40,16 @@ fun FilmNestNavHost(navController: NavHostController) {
         }
 
         composable<Home> {
+            val viewModel: HomeViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
             HomeScreen(
-                onViewSettings = { navController.navigate(route = Settings) },
+                uiState = uiState,
                 onViewMovieDetails = { movieId ->
                     navController.navigate(MovieDetails(movieId))
-                })
+                },
+                onViewSettings = { navController.navigate(route = Settings) },
+            )
         }
 
         composable<MovieDetails> { backStackEntry ->
