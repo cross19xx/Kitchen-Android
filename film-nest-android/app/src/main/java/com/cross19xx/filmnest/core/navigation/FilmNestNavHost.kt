@@ -48,7 +48,7 @@ fun FilmNestNavHost(navController: NavHostController) {
                 onViewMovieDetails = { movieId ->
                     navController.navigate(MovieDetails(movieId))
                 },
-                onViewSettings = { navController.navigate(route = Settings) },
+                onViewSettings = { navController.navigate(Settings) },
             )
         }
 

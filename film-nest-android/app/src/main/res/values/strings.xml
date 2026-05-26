@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Film Nest</string>
+    <string name="popular">Popular</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="trending_hits_and_fan_favorites">Trending hits and fan favorites.</string>
+    <string name="critically_acclaimed_masterpieces_of_cinema">Critically acclaimed masterpieces of cinema.</string>
+    <string name="sneak_peek_at_upcoming_cinematic_experiences">Sneak peek at upcoming cinematic experiences.</string>
+    <string name="genres">Genres</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="see_what_the_world_is_watching_now">See what the world is watching now</string>
+    <string name="film_nest_banner_image">Film Nest Banner Image</string>
+    <string name="settings_button">Settings button</string>
 </resources>

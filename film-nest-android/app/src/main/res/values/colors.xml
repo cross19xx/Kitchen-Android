@@ -3,5 +3,6 @@
     <color name="brand_primary">#FFFFC107</color>
     <color name="brand_on_primary">#FF212121</color>
     <color name="background_primary">#FFFFFF</color>
+    <color name="placeholder_gray">#AAAAAA</color>
     <color name="text_primary">@color/brand_on_primary</color>
 </resources>

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 object Home
 
 @Serializable
-data class MovieDetails(val movieId: String)
+data class MovieDetails(val movieId: Int)
 
 @Serializable
 object Settings

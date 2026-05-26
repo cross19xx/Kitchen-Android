@@ -17,7 +17,7 @@ import com.cross19xx.filmnest.core.theme.FilmNestTheme
 
 @Composable
 fun MovieDetailsScreen(
-    movieId: String,
+    movieId: Int,
     onBackPressed: () -> Unit,
 ) {
     Column(
@@ -40,6 +40,6 @@ fun MovieDetailsScreen(
 @Composable
 fun MovieDetailsScreenPreview() {
     FilmNestTheme {
-        MovieDetailsScreen(movieId = "test-movie-id", onBackPressed = { })
+        MovieDetailsScreen(movieId = 123456, onBackPressed = { })
     }
 }

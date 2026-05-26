@@ -1,36 +1,62 @@
 package com.cross19xx.filmnest.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cross19xx.filmnest.core.theme.FilmNestTheme
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import com.cross19xx.filmnest.R
+import com.cross19xx.filmnest.data.model.Genre
 import com.cross19xx.filmnest.data.model.Movie
+
+data class FeedItem(
+    val title: String,
+    val description: String,
+    val movies: List<Movie>
+)
 
 
 @Composable
 fun HomeScreen(
     uiState: HomeUiState,
-    onViewMovieDetails: (movieId: String) -> Unit,
+    onViewMovieDetails: (movieId: Int) -> Unit,
     onViewSettings: () -> Unit
 ) {
 
@@ -48,31 +74,68 @@ fun HomeScreen(
             }
 
             is HomeUiState.Success -> {
+                val sections = listOf(
+                    FeedItem(
+                        title = stringResource(R.string.now_playing),
+                        description = stringResource(
+                            R.string.see_what_the_world_is_watching_now
+                        ),
+                        movies = uiState.nowPlaying
+                    ),
+                    FeedItem(
+                        title = stringResource(R.string.popular),
+                        description = stringResource(R.string.trending_hits_and_fan_favorites),
+                        movies = uiState.popular
+                    ),
+                    FeedItem(
+                        title = stringResource(R.string.top_rated),
+                        description = stringResource(
+                            R.string.critically_acclaimed_masterpieces_of_cinema
+                        ),
+                        movies = uiState.topRated
+                    ),
+                    FeedItem(
+                        title = stringResource(R.string.upcoming),
+                        description = stringResource(
+                            R.string.sneak_peek_at_upcoming_cinematic_experiences
+                        ),
+                        movies = uiState.upcoming
+                    )
+                )
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    HomeHeader(topPadding = 0.dp)
+                    HomeHeader(topPadding = 0.dp, onViewSettings)
 
-                    Column(
+                    LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f)
-                            .verticalScroll(rememberScrollState())
-                            .padding(16.dp)
                     ) {
-                        MovieSection("Now Playing", uiState.nowPlaying)
-                        MovieSection("Popular", uiState.popular)
-                        MovieSection("Top Rated", uiState.topRated)
-                        MovieSection("Upcoming", uiState.upcoming)
+                        item(key = "now_playing", contentType = "featured") {
+                            BannerSection()
+                        }
 
-                        uiState.genres.forEach { genre ->
-                            Text(genre.name)
+                        item(key = "categories", contentType = "category_list") {
+                            GenresRow(uiState.genres)
+                        }
+
+                        items(
+                            items = sections,
+                            key = { it.title },
+                            contentType = { "movie_section" }
+                        ) { section ->
+                            MovieSection(
+                                section.title,
+                                movies = section.movies,
+                                onMoviePressed = onViewMovieDetails,
+                                description = section.description
+                            )
                         }
                     }
-
-
                 }
             }
 
@@ -94,7 +157,9 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeHeader(topPadding: Dp) {
+fun HomeHeader(topPadding: Dp, onViewSettings: () -> Unit) {
+    val haptic = LocalHapticFeedback.current
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -104,108 +169,174 @@ fun HomeHeader(topPadding: Dp) {
                 end = 16.dp,
                 bottom = 8.dp
             ),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
 
     ) {
+        Icon(
+            painterResource(R.drawable.ic_dove),
+            contentDescription = stringResource(R.string.app_name),
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
+        )
+
         Text(
             text = "Hello there",
             style = MaterialTheme.typography.displaySmall,
-            fontSize = 24.sp,
-            lineHeight = 24.sp,
+            fontSize = 20.sp,
+            lineHeight = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.weight(1f)
         )
 
-        Box(
-            modifier = Modifier
-                .size(width = 24.dp, height = 24.dp)
-                .background(MaterialTheme.colorScheme.primary)
-
-        )
-    }
-}
-
-@Composable
-fun MovieSection(title: String, movies: List<Movie>) {
-    Column(modifier = Modifier.padding(bottom = 24.dp)) {
-        Text(
-            text = title,
-            fontSize = 18.sp,
-            lineHeight = 18.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
-        movies.forEach { movie ->
-            Text(movie.title)
+        IconButton(onClick = onViewSettings) {
+            Icon(
+                painterResource(R.drawable.ic_settings),
+                contentDescription = stringResource(R.string.settings_button),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
-    val dummyMovies = listOf(
-        Movie(
-            id = 1304313,
-            title = "Lee Cronin's The Mummy",
-            overview = "The young daughter of a journalist disappears into the desert without a trace—eight years later, the broken family is shocked when she is returned to them, as what should be a joyful reunion turns into a living nightmare.",
-            posterUrl = null,
-            backdropUrl = null,
-            releaseDate = "2026-04-15",
-            voteAverage = 8.037,
-            genreIds = listOf(27, 9648),
-        ),
-        Movie(
-            id = 1380291,
-            title = "Tom Clancy's Jack Ryan: Ghost War",
-            overview = "Jack Ryan is reluctantly pulled back into espionage when an international covert mission unravels a deadly conspiracy. Racing against time, he joins CIA allies Mike November & James Greer and sharp MI6 officer Emma Marlowe to battle a rogue black-ops unit in a high-stakes, deeply personal fight.",
-            posterUrl = null,
-            backdropUrl = null,
-            releaseDate = "2026-05-20",
-            voteAverage = 7.22,
-            genreIds = listOf(28, 53),
-        ),
-        Movie(
-            id = 1439930,
-            title = "The Punisher: One Last Kill",
-            overview = "As Frank Castle searches for meaning beyond revenge, an unexpected force pulls him back into the fight.",
-            posterUrl = null,
-            backdropUrl = null,
-            releaseDate = "2026-05-12",
-            voteAverage = 8.437,
-            genreIds = listOf(28, 18, 80),
-        ),
-        Movie(
-            id = 1226863,
-            title = "The Super Mario Galaxy Movie",
-            overview = "Having thwarted Bowser's previous plot to marry Princess Peach, Mario and Luigi now face a fresh threat in Bowser Jr., who is determined to liberate his father from captivity and restore the family legacy. Alongside companions new and old, the brothers travel across the stars to stop the young heir's crusade.",
-            posterUrl = null,
-            backdropUrl = null,
-            releaseDate = "2026-04-01",
-            voteAverage = 7.924,
-            genreIds = listOf(10751, 35, 12, 14, 16),
-        ),
-        Movie(
-            id = 1007757,
-            title = "Swapped",
-            overview = "A small woodland creature and a majestic bird, two natural sworn ely trade places and set off on an adventure of a lifetime to switch back. Their journeysoon uncovers a greater threat—one that could endanger not only their species, but the entire valley they call home.",
-            posterUrl = null,
-            backdropUrl = null,
-            releaseDate = "2026-05-01",
-            voteAverage = 9.0,
-            genreIds = listOf(12, 16, 10751, 14),
-        ),
-    )
-
-    FilmNestTheme {
-        HomeScreen(
-            uiState = HomeUiState.Loading,
-            onViewSettings = { },
-            onViewMovieDetails = { }
+fun BannerSection() {
+    Box(
+        modifier = Modifier
+            .padding(16.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(R.drawable.banner)
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(R.drawable.placeholder_background),
+            contentDescription = stringResource(R.string.film_nest_banner_image),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
 
-private val DUMMY_MOVIE_LIST = listOf<Movie>()
+@Composable
+fun GenresRow(genres: List<Genre>) {
+    if (genres.isEmpty()) return
+
+    Column(modifier = Modifier.padding(vertical = 12.dp)) {
+        Text(
+            text = stringResource(R.string.genres),
+            style = MaterialTheme.typography.displaySmall,
+            fontSize = 18.sp,
+            lineHeight = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
+        )
+
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            item { Box(modifier = Modifier.width(4.dp)) }
+
+            items(
+                items = genres,
+                key = { it.id },
+                contentType = { "genres_card" }
+            ) { genre ->
+                Box(
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.surfaceDim,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .clip(RoundedCornerShape(16.dp))
+
+                        .padding(vertical = 8.dp, horizontal = 16.dp)
+                ) {
+                    Text(
+                        text = genre.name,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+
+            item { Box(modifier = Modifier.width(4.dp)) }
+        }
+    }
+}
+
+@Composable
+fun MovieSection(
+    title: String,
+    description: String?,
+    movies: List<Movie>,
+    onMoviePressed: (movieId: Int) -> Unit
+) {
+    val haptic = LocalHapticFeedback.current
+
+    Column(modifier = Modifier.padding(vertical = 12.dp)) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.displaySmall,
+            fontSize = 18.sp,
+            lineHeight = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 2.dp)
+        )
+
+        if (description != null) {
+            Text(
+                text = description,
+                fontSize = 12.sp,
+                lineHeight = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
+            )
+        }
+
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            item { Box(modifier = Modifier.width(4.dp)) } // Left gutter
+
+            items(
+                items = movies,
+                key = { it.id },
+                contentType = { "movie_card" }
+            ) { movie ->
+                Box(
+                    modifier = Modifier
+                        .width(120.dp)
+                        .aspectRatio(2f / 3f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onMoviePressed(movie.id)
+                        }
+                ) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(movie.posterUrl)
+                            .crossfade(true)
+                            .build(),
+                        placeholder = painterResource(R.drawable.placeholder_background),
+                        contentDescription = movie.title,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+
+            item { Box(modifier = Modifier.width(4.dp)) } // Right gutter
+        }
+    }
+}
