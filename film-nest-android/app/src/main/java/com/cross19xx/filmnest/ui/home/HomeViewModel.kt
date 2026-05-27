@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,20 +31,22 @@ class HomeViewModel @Inject constructor(
     private fun loadMovies() {
         viewModelScope.launch {
             try {
-                val popular = async { movieRepository.getPopularMovies() }
-                val nowPlaying = async { movieRepository.getNowPlayingMovies() }
-                val topRated = async { movieRepository.getTopRatedMovies() }
-                val upcoming = async { movieRepository.getUpcomingMovies() }
+                supervisorScope {
+                    val popular = async { movieRepository.getPopularMovies() }
+                    val nowPlaying = async { movieRepository.getNowPlayingMovies() }
+                    val topRated = async { movieRepository.getTopRatedMovies() }
+                    val upcoming = async { movieRepository.getUpcomingMovies() }
 
-                val genres = async { genreRepository.getGenres() }
+                    val genres = async { genreRepository.getGenres() }
 
-                _uiState.value = HomeUiState.Success(
-                    popular = popular.await(),
-                    nowPlaying = nowPlaying.await(),
-                    topRated = topRated.await(),
-                    upcoming = upcoming.await(),
-                    genres = genres.await()
-                )
+                    _uiState.value = HomeUiState.Success(
+                        popular = popular.await(),
+                        nowPlaying = nowPlaying.await(),
+                        topRated = topRated.await(),
+                        upcoming = upcoming.await(),
+                        genres = genres.await()
+                    )
+                }
             } catch (e: Exception) {
                 _uiState.value = HomeUiState.Error(e.message ?: "Unknown error")
             }
