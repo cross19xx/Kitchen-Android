@@ -1,4 +1,4 @@
-package com.cross19xx.filmnest.core.network
+package com.cross19xx.filmnest.network
 
 import com.cross19xx.filmnest.BuildConfig
 import okhttp3.Interceptor

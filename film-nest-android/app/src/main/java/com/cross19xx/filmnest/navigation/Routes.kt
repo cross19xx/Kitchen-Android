@@ -1,4 +1,4 @@
-package com.cross19xx.filmnest.core.navigation
+package com.cross19xx.filmnest.navigation
 
 import kotlinx.serialization.Serializable
 

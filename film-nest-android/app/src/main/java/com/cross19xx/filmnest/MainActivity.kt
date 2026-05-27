@@ -5,8 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
-import com.cross19xx.filmnest.core.navigation.FilmNestNavHost
-import com.cross19xx.filmnest.core.theme.FilmNestTheme
+import com.cross19xx.filmnest.navigation.FilmNestNavHost
+import com.cross19xx.filmnest.theme.FilmNestTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

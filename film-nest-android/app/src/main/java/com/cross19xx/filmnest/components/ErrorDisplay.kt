@@ -1,4 +1,4 @@
-package com.cross19xx.filmnest.core.components
+package com.cross19xx.filmnest.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

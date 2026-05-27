@@ -41,7 +41,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.cross19xx.filmnest.R
-import com.cross19xx.filmnest.core.components.ErrorDisplay
+import com.cross19xx.filmnest.components.ErrorDisplay
 import com.cross19xx.filmnest.data.model.Genre
 import com.cross19xx.filmnest.data.model.Movie
 

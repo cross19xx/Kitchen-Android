@@ -1,4 +1,4 @@
-package com.cross19xx.filmnest.core.theme
+package com.cross19xx.filmnest.theme
 
 import android.app.UiModeManager
 import android.content.Context

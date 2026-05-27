@@ -1,4 +1,4 @@
-package com.cross19xx.filmnest.core.network
+package com.cross19xx.filmnest.network
 
 import com.cross19xx.filmnest.data.remote.TmdbApiService
 import dagger.Module

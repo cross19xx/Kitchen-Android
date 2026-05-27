@@ -1,4 +1,4 @@
-package com.cross19xx.filmnest.core.theme
+package com.cross19xx.filmnest.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.font.Font

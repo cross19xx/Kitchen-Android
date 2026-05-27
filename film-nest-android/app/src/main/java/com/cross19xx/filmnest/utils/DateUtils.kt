@@ -1,4 +1,4 @@
-package com.cross19xx.filmnest.core.utils
+package com.cross19xx.filmnest.utils
 
 import java.text.SimpleDateFormat
 import java.util.Locale
