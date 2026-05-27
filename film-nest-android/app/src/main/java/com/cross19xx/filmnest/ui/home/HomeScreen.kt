@@ -34,7 +34,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,7 +42,6 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.cross19xx.filmnest.R
 import com.cross19xx.filmnest.core.components.ErrorDisplay
-import com.cross19xx.filmnest.core.theme.FilmNestTheme
 import com.cross19xx.filmnest.data.model.Genre
 import com.cross19xx.filmnest.data.model.Movie
 
@@ -150,8 +148,6 @@ fun HomeScreen(
 
 @Composable
 fun HomeHeader(topPadding: Dp, onViewSettings: () -> Unit) {
-    val haptic = LocalHapticFeedback.current
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -330,17 +326,5 @@ fun MovieSection(
 
             item { Box(modifier = Modifier.width(4.dp)) } // Right gutter
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    FilmNestTheme {
-        HomeScreen(
-            uiState = HomeUiState.Error("Error viewing the data"),
-            onViewSettings = {},
-            onViewMovieDetails = {}
-        )
     }
 }

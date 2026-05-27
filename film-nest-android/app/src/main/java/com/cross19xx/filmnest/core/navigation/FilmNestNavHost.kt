@@ -12,8 +12,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import com.cross19xx.filmnest.ui.details.MovieDetailsScreen
+import com.cross19xx.filmnest.ui.details.MovieDetailsViewModel
 import com.cross19xx.filmnest.ui.home.HomeScreen
 import com.cross19xx.filmnest.ui.home.HomeViewModel
 import com.cross19xx.filmnest.ui.settings.SettingsScreen
@@ -52,10 +52,14 @@ fun FilmNestNavHost(navController: NavHostController) {
             )
         }
 
-        composable<MovieDetails> { backStackEntry ->
-            val route = backStackEntry.toRoute<MovieDetails>()
+        composable<MovieDetails> {
+            val viewModel: MovieDetailsViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
             MovieDetailsScreen(
-                movieId = route.movieId, onBackPressed = { handleBackPressed() })
+                uiState = uiState,
+                onBackPressed = { handleBackPressed() }
+            )
         }
 
         composable<Settings> {
