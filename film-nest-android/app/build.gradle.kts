@@ -57,6 +57,13 @@ android {
         buildConfig = true
         compose = true
     }
+    testOptions {
+        unitTests.all {
+            it.testLogging {
+                events("passed", "failed", "skipped")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -89,11 +96,16 @@ dependencies {
     implementation(libs.converter.gson)
 
     // Testing
-    testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.turbine)
+
 
     // Debug
     debugImplementation(libs.androidx.compose.ui.test.manifest)
