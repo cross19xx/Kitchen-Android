@@ -8,6 +8,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -17,6 +18,7 @@ import com.cross19xx.filmnest.ui.details.MovieDetailsViewModel
 import com.cross19xx.filmnest.ui.home.HomeScreen
 import com.cross19xx.filmnest.ui.home.HomeViewModel
 import com.cross19xx.filmnest.ui.settings.SettingsScreen
+import com.cross19xx.filmnest.viewmodel.ThemeViewModel
 
 private const val MOTION_DURATION = 220
 private const val ENTER_DELAY = 60
@@ -25,7 +27,10 @@ private const val FINAL_SCALE = 1.015f
 
 
 @Composable
-fun FilmNestNavHost(navController: NavHostController) {
+fun FilmNestNavHost(
+    navController: NavHostController,
+    themeViewModel: ThemeViewModel
+) {
     NavHost(
         navController,
         startDestination = Home,
@@ -63,7 +68,12 @@ fun FilmNestNavHost(navController: NavHostController) {
         }
 
         composable<Settings> {
-            SettingsScreen(onBackPressed = { handleBackPressed() })
+            val themeMode by themeViewModel.themeMode.collectAsStateWithLifecycle()
+            SettingsScreen(
+                themeMode = themeMode,
+                onBackPressed = { handleBackPressed() },
+                onThemeModeChanged = { themeViewModel.setThemeMode(it) },
+            )
         }
     }
 }

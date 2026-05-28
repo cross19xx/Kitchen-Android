@@ -1,6 +1,7 @@
-package com.cross19xx.filmnest.network
+package com.cross19xx.filmnest.di
 
 import com.cross19xx.filmnest.data.remote.TmdbApiService
+import com.cross19xx.filmnest.network.RetrofitClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
