@@ -17,10 +17,11 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
@@ -44,8 +45,8 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.cross19xx.filmnest.R
 import com.cross19xx.filmnest.components.ErrorDisplay
-import com.cross19xx.filmnest.utils.DateUtils
 import com.cross19xx.filmnest.data.model.MovieDetail
+import com.cross19xx.filmnest.utils.DateUtils
 
 
 @SuppressLint("DefaultLocale")
@@ -238,18 +239,21 @@ fun MovieBanner(movie: MovieDetail, onBackPressed: () -> Unit) {
             )
         }
 
-        OutlinedButton(
+        OutlinedIconButton(
             onClick = onBackPressed,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .offset(x = 16.dp, y = topPadding + 8.dp),
-            colors = ButtonDefaults.outlinedButtonColors(
+            colors = IconButtonDefaults.outlinedIconButtonColors(
                 containerColor = Color.White.copy(alpha = 0.5f),
                 contentColor = Color.Black.copy(alpha = 0.8f)
             )
 
         ) {
-            Text("Back")
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_back),
+                contentDescription = stringResource(R.string.back),
+            )
         }
     }
 }
