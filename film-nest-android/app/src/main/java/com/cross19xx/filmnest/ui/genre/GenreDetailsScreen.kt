@@ -74,7 +74,12 @@ fun GenreDetailsScreen(
                     LazyVerticalGrid(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
+                        modifier = Modifier.padding(
+                            top = 0.dp,
+                            start = 16.dp,
+                            end = 16.dp,
+                            bottom = 24.dp
+                        ),
                         columns = GridCells.Fixed(2)
                     ) {
                         items(
