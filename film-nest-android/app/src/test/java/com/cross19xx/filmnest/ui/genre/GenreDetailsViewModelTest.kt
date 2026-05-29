@@ -5,7 +5,6 @@ import app.cash.turbine.test
 import com.cross19xx.filmnest.data.model.Genre
 import com.cross19xx.filmnest.data.model.MediaItem
 import com.cross19xx.filmnest.data.model.MediaType
-import com.cross19xx.filmnest.data.model.Movie
 import com.cross19xx.filmnest.data.repository.GenreRepository
 import com.cross19xx.filmnest.data.repository.MovieRepository
 import com.cross19xx.filmnest.data.repository.TvShowRepository
