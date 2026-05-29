@@ -1,12 +1,10 @@
 package com.cross19xx.filmnest.ui.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,10 +25,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +38,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.cross19xx.filmnest.R
 import com.cross19xx.filmnest.components.ErrorDisplay
+import com.cross19xx.filmnest.components.MovieCard
 import com.cross19xx.filmnest.data.model.Genre
 import com.cross19xx.filmnest.data.model.Movie
 
@@ -265,8 +262,6 @@ fun MovieSection(
     movies: List<Movie>,
     onMoviePressed: (movieId: Int) -> Unit
 ) {
-    val haptic = LocalHapticFeedback.current
-
     Column(modifier = Modifier.padding(vertical = 12.dp)) {
         Text(
             text = title,
@@ -299,28 +294,11 @@ fun MovieSection(
                 key = { it.id },
                 contentType = { "movie_card" }
             ) { movie ->
-                Box(
-                    modifier = Modifier
-                        .width(120.dp)
-                        .aspectRatio(2f / 3f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            onMoviePressed(movie.id)
-                        }
-                ) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(movie.posterUrl)
-                            .crossfade(true)
-                            .build(),
-                        placeholder = painterResource(R.drawable.placeholder_background),
-                        contentDescription = movie.title,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+                MovieCard(
+                    modifier = Modifier.width(120.dp),
+                    movie = movie,
+                    onMoviePressed = onMoviePressed
+                )
             }
 
             item { Box(modifier = Modifier.width(4.dp)) } // Right gutter
