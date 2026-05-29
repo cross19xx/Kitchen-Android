@@ -7,14 +7,22 @@ import javax.inject.Inject
 class GenreRepository @Inject constructor(private val api: TmdbApiService) {
 
     suspend fun getGenres(): List<Genre> {
-        return api.getGenres().genres.map { dto ->
+        val movieGenresDto = api.getMovieGenres()
+        val tvShowGenresDto = api.getTvGenres()
+
+        val genres = (movieGenresDto.genres + tvShowGenresDto.genres).map { dto ->
             Genre(id = dto.id, name = dto.name)
         }
+
+        return genres.distinctBy { it.id }.sortedBy { it.name }
     }
 
     suspend fun getGenre(genreId: Int): Genre {
-        val genresDto = api.getGenres()
-        val genreDto = genresDto.genres.find { it.id == genreId }
+        val movieGenresDto = api.getMovieGenres()
+        val tvShowGenresDto = api.getTvGenres()
+
+        val genresDto = movieGenresDto.genres + tvShowGenresDto.genres
+        val genreDto = genresDto.find { it.id == genreId }
 
         if (genreDto == null) {
             return Genre(id = genreId, name = "Unknown")

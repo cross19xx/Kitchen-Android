@@ -28,35 +28,55 @@ class GenreRepositoryTest {
          * Using `coEvery` because we are working with suspense functions. regular functions
          * use `every`
          */
-        coEvery { api.getGenres() } returns GenreListResponse(
+        coEvery { api.getMovieGenres() } returns GenreListResponse(
             genres = listOf(
                 GenreDto(id = 28, name = "Action"),
                 GenreDto(id = 29, name = "Horror")
             )
         )
+        coEvery { api.getTvGenres() } returns GenreListResponse(
+            genres = listOf(
+                GenreDto(id = 28, name = "Action"),
+                GenreDto(id = 30, name = "Comedy")
+            )
+        )
 
         val result = repository.getGenres()
 
-        assertEquals(2, result.size)
+        assertEquals(3, result.size)
 
+        // They are sorted alphabetically
         assertEquals(28, result[0].id)
         assertEquals("Action", result[0].name)
 
-        assertEquals(29, result[1].id)
-        assertEquals("Horror", result[1].name)
+        assertEquals(30, result[1].id)
+        assertEquals("Comedy", result[1].name)
+
+        assertEquals(29, result[2].id)
+        assertEquals("Horror", result[2].name)
     }
 
     @Test
     fun `getGenres can return an empty list`() = runTest {
-        coEvery { api.getGenres() } returns GenreListResponse(genres = listOf())
+        coEvery { api.getMovieGenres() } returns GenreListResponse(genres = listOf())
+        coEvery { api.getTvGenres() } returns GenreListResponse(genres = listOf())
 
         val result = repository.getGenres()
         assertEquals(0, result.size)
     }
 
     @Test(expected = RuntimeException::class)
-    fun `getGenres propagates API exception`() = runTest {
-        coEvery { api.getGenres() } throws RuntimeException("Network error")
+    fun `getMovieGenres propagates API exception`() = runTest {
+        coEvery { api.getMovieGenres() } throws RuntimeException("Network error")
+        coEvery { api.getTvGenres() } returns GenreListResponse(genres = listOf())
+
+        repository.getGenres()
+    }
+
+    @Test(expected = RuntimeException::class)
+    fun `getTvGenres propagates API exception`() = runTest {
+        coEvery { api.getMovieGenres() } throws RuntimeException("Network error")
+        coEvery { api.getTvGenres() } returns GenreListResponse(genres = listOf())
 
         repository.getGenres()
     }

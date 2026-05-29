@@ -75,10 +75,10 @@ class MovieRepositoryTest {
         val result = repository.getPopularMovies()
         val movie = result[0]
 
-        assertNotNull(movie.posterUrl)
-        assertNotNull(movie.backdropUrl)
-        assert(movie.posterUrl!!.endsWith("/abc.jpg"))
-        assert(movie.backdropUrl!!.endsWith("/xyz.jpg"))
+        assertNotNull(movie.posterPath)
+        assertNotNull(movie.backdropPath)
+        assert(movie.posterPath!!.endsWith("/abc.jpg"))
+        assert(movie.backdropPath!!.endsWith("/xyz.jpg"))
     }
 
     @Test
@@ -88,8 +88,8 @@ class MovieRepositoryTest {
 
         val result = repository.getPopularMovies()
 
-        assertNull(result[0].posterUrl)
-        assertNull(result[0].backdropUrl)
+        assertNull(result[0].posterPath)
+        assertNull(result[0].backdropPath)
     }
 
     @Test
@@ -152,7 +152,11 @@ class MovieRepositoryTest {
             budget = 160000000L,
             revenue = 836800000L,
             status = "Released",
-            genres = listOf(GenreDto(id = 28, name = "Action"), GenreDto(id = 878, name = "Sci-Fi")),
+            genres = listOf(
+                GenreDto(id = 28, name = "Action"),
+                GenreDto(id = 878, name = "Sci-Fi")
+            ),
+            imdbId = "sample-imdb-id",
             popularity = 95.0,
         )
         coEvery { api.getMovieDetails(42) } returns detailDto
@@ -163,11 +167,11 @@ class MovieRepositoryTest {
         assertEquals("Inception", result.title)
         assertEquals("A mind-bending thriller", result.overview)
         assertEquals("Your mind is the scene of the crime", result.tagline)
-        assert(result.posterUrl!!.endsWith("/inception_poster.jpg"))
-        assert(result.backdropUrl!!.endsWith("/inception_backdrop.jpg"))
+        assert(result.posterPath!!.endsWith("/inception_poster.jpg"))
+        assert(result.backdropPath!!.endsWith("/inception_backdrop.jpg"))
         assertEquals("2010-07-16", result.releaseDate)
         assertEquals(8.4, result.voteAverage, 0.01)
-        assertEquals(148, result.runtime)
+        assertEquals(148, result.runtimeMinutes)
         assertEquals(160000000L, result.budget)
         assertEquals(836800000L, result.revenue)
         assertEquals("Released", result.status)

@@ -12,8 +12,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.cross19xx.filmnest.ui.details.MovieDetailsScreen
-import com.cross19xx.filmnest.ui.details.MovieDetailsViewModel
+import com.cross19xx.filmnest.ui.details.MediaDetailsScreen
+import com.cross19xx.filmnest.ui.details.MediaDetailsViewModel
 import com.cross19xx.filmnest.ui.genre.GenreDetailsScreen
 import com.cross19xx.filmnest.ui.genre.GenreDetailsViewModel
 import com.cross19xx.filmnest.ui.home.HomeScreen
@@ -51,9 +51,10 @@ fun FilmNestNavHost(
 
             HomeScreen(
                 uiState = uiState,
-                onViewMovieDetails = { movieId ->
-                    navController.navigate(MovieDetails(movieId))
+                onViewMediaDetails = { mediaId, mediaType ->
+                    navController.navigate(MediaDetails(mediaId, mediaType))
                 },
+
                 onViewGenreDetails = { genreId ->
                     navController.navigate(GenreDetails(genreId))
                 },
@@ -61,11 +62,11 @@ fun FilmNestNavHost(
             )
         }
 
-        composable<MovieDetails> {
-            val viewModel: MovieDetailsViewModel = hiltViewModel()
+        composable<MediaDetails> {
+            val viewModel: MediaDetailsViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-            MovieDetailsScreen(
+            MediaDetailsScreen(
                 uiState = uiState,
                 onBackPressed = { handleBackPressed() }
             )
@@ -78,8 +79,8 @@ fun FilmNestNavHost(
             GenreDetailsScreen(
                 uiState = uiState,
                 onBackPressed = { handleBackPressed() },
-                onViewMovieDetails = { movieId ->
-                    navController.navigate(MovieDetails(movieId))
+                onViewMediaDetails = { mediaId, mediaType ->
+                    navController.navigate(MediaDetails(mediaId, mediaType))
                 }
             )
         }

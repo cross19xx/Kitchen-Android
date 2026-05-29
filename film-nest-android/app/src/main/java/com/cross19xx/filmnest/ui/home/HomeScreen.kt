@@ -38,21 +38,22 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.cross19xx.filmnest.R
 import com.cross19xx.filmnest.components.ErrorDisplay
-import com.cross19xx.filmnest.components.MovieCard
+import com.cross19xx.filmnest.components.MediaCard
 import com.cross19xx.filmnest.data.model.Genre
-import com.cross19xx.filmnest.data.model.Movie
+import com.cross19xx.filmnest.data.model.MediaItem
+import com.cross19xx.filmnest.data.model.MediaType
 
 data class FeedItem(
     val title: String,
     val description: String,
-    val movies: List<Movie>
+    val mediaItems: List<MediaItem>
 )
 
 
 @Composable
 fun HomeScreen(
     uiState: HomeUiState,
-    onViewMovieDetails: (movieId: Int) -> Unit,
+    onViewMediaDetails: (mediaId: Int, mediaType: MediaType) -> Unit,
     onViewGenreDetails: (genreId: Int) -> Unit,
     onViewSettings: () -> Unit
 ) {
@@ -77,26 +78,26 @@ fun HomeScreen(
                         description = stringResource(
                             R.string.see_what_the_world_is_watching_now
                         ),
-                        movies = uiState.nowPlaying
+                        mediaItems = uiState.nowPlaying
                     ),
                     FeedItem(
                         title = stringResource(R.string.popular),
                         description = stringResource(R.string.trending_hits_and_fan_favorites),
-                        movies = uiState.popular
+                        mediaItems = uiState.popular
                     ),
                     FeedItem(
                         title = stringResource(R.string.top_rated),
                         description = stringResource(
                             R.string.critically_acclaimed_masterpieces_of_cinema
                         ),
-                        movies = uiState.topRated
+                        mediaItems = uiState.topRated
                     ),
                     FeedItem(
                         title = stringResource(R.string.upcoming),
                         description = stringResource(
                             R.string.sneak_peek_at_upcoming_cinematic_experiences
                         ),
-                        movies = uiState.upcoming
+                        mediaItems = uiState.upcoming
                     )
                 )
 
@@ -126,12 +127,12 @@ fun HomeScreen(
                         items(
                             items = sections,
                             key = { it.title },
-                            contentType = { "movie_section" }
+                            contentType = { "media_section" }
                         ) { section ->
-                            MovieSection(
+                            MediaSection(
                                 section.title,
-                                movies = section.movies,
-                                onMoviePressed = onViewMovieDetails,
+                                mediaItems = section.mediaItems,
+                                onMediaPressed = onViewMediaDetails,
                                 description = section.description
                             )
                         }
@@ -256,11 +257,11 @@ fun GenresRow(
 }
 
 @Composable
-fun MovieSection(
+fun MediaSection(
     title: String,
     description: String?,
-    movies: List<Movie>,
-    onMoviePressed: (movieId: Int) -> Unit
+    mediaItems: List<MediaItem>,
+    onMediaPressed: (mediaId: Int, mediaType: MediaType) -> Unit
 ) {
     Column(modifier = Modifier.padding(vertical = 12.dp)) {
         Text(
@@ -290,14 +291,14 @@ fun MovieSection(
             item { Box(modifier = Modifier.width(4.dp)) } // Left gutter
 
             items(
-                items = movies,
+                items = mediaItems,
                 key = { it.id },
-                contentType = { "movie_card" }
-            ) { movie ->
-                MovieCard(
+                contentType = { "media_items_card" }
+            ) { media ->
+                MediaCard(
                     modifier = Modifier.width(120.dp),
-                    movie = movie,
-                    onMoviePressed = onMoviePressed
+                    media = media,
+                    onMediaPressed = onMediaPressed
                 )
             }
 

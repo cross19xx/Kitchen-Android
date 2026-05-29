@@ -51,25 +51,25 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.cross19xx.filmnest.R
 import com.cross19xx.filmnest.components.ErrorDisplay
-import com.cross19xx.filmnest.data.model.MovieDetail
+import com.cross19xx.filmnest.data.model.MediaItemDetail
 import com.cross19xx.filmnest.utils.DateUtils
 
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun MovieDetailsScreen(
-    uiState: MovieDetailsUiState,
+fun MediaDetailsScreen(
+    uiState: MediaDetailsUiState,
     onBackPressed: () -> Unit,
 ) {
     Scaffold(
-        contentWindowInsets = if (uiState is MovieDetailsUiState.Success) {
+        contentWindowInsets = if (uiState is MediaDetailsUiState.Success) {
             ScaffoldDefaults.contentWindowInsets.exclude(WindowInsets.statusBars)
         } else {
             ScaffoldDefaults.contentWindowInsets
         }
     ) { innerPadding ->
         when (uiState) {
-            is MovieDetailsUiState.Loading -> {
+            is MediaDetailsUiState.Loading -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -80,15 +80,15 @@ fun MovieDetailsScreen(
                 }
             }
 
-            is MovieDetailsUiState.Error -> {
-                ErrorDisplay()
+            is MediaDetailsUiState.Error -> {
+                ErrorDisplay(modifier = Modifier.padding(innerPadding))
             }
 
-            is MovieDetailsUiState.Success -> {
+            is MediaDetailsUiState.Success -> {
                 val scrollState = rememberScrollState()
-                val movie = uiState.movie
+                val media = uiState.media
                 val releaseDate = DateUtils.formatDate(
-                    input = movie.releaseDate,
+                    input = media.releaseDate,
                     outputFormat = "EEEE, MMMM dd, yyyy"
                 )
 
@@ -113,14 +113,14 @@ fun MovieDetailsScreen(
                             .fillMaxSize()
                             .verticalScroll(scrollState)
                     ) {
-                        MovieBanner(movie)
+                        MediaBanner(media)
 
                         Column(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.padding(16.dp)
                         ) {
                             Text(
-                                text = movie.title,
+                                text = media.title,
                                 textAlign = TextAlign.Center,
                                 style = MaterialTheme.typography.displaySmall,
                                 fontWeight = FontWeight.SemiBold,
@@ -141,7 +141,7 @@ fun MovieDetailsScreen(
                                 ) {
                                     MovieDescription(
                                         label = stringResource(R.string.rating),
-                                        value = String.format("%.1f", movie.voteAverage)
+                                        value = String.format("%.1f", media.voteAverage)
                                     )
                                 }
 
@@ -151,7 +151,7 @@ fun MovieDetailsScreen(
                                 ) {
                                     MovieDescription(
                                         label = stringResource(R.string.runtime),
-                                        value = "${movie.runtime} min",
+                                        value = "${media.runtimeMinutes} min",
                                     )
                                 }
 
@@ -161,13 +161,13 @@ fun MovieDetailsScreen(
                                 ) {
                                     MovieDescription(
                                         label = "Status",
-                                        value = movie.status,
+                                        value = media.status,
                                     )
                                 }
                             }
 
                             Text(
-                                text = movie.overview,
+                                text = media.overview,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.padding(bottom = 24.dp)
                             )
@@ -213,8 +213,8 @@ fun MovieDetailsScreen(
 }
 
 @Composable
-fun MovieBanner(movie: MovieDetail) {
-    val backdropUrl = movie.backdropUrl ?: movie.posterUrl
+fun MediaBanner(media: MediaItemDetail) {
+    val backdropUrl = media.backdropPath ?: media.posterPath
 
     val backdropHeight = 320.dp
     val offset = 32.dp
@@ -237,7 +237,7 @@ fun MovieBanner(movie: MovieDetail) {
                         .crossfade(true)
                         .build(),
                     placeholder = painterResource(R.drawable.placeholder_background),
-                    contentDescription = movie.title,
+                    contentDescription = media.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
@@ -263,11 +263,11 @@ fun MovieBanner(movie: MovieDetail) {
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(movie.posterUrl)
+                    .data(media.posterPath)
                     .crossfade(true)
                     .build(),
                 placeholder = painterResource(R.drawable.placeholder_background),
-                contentDescription = movie.title,
+                contentDescription = media.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()

@@ -8,55 +8,46 @@ import com.cross19xx.filmnest.data.model.MediaType
 import com.cross19xx.filmnest.data.remote.TmdbApiService
 import javax.inject.Inject
 
-class MovieRepository @Inject constructor(private val api: TmdbApiService) {
-
+class TvShowRepository @Inject constructor(private val api: TmdbApiService) {
     private companion object {
         const val IMAGE_BASE_URL = BuildConfig.TMDB_BASE_IMAGE_URL
     }
 
-    suspend fun getPopularMovies(page: Int = 1): List<MediaItem> {
-        return api.getPopularMovies(page).results.map { it.toMediaItem() }
+    suspend fun getPopularTvShows(page: Int = 1): List<MediaItem> {
+        return api.getPopularTvShows(page).results.map { it.toMediaItem() }
     }
 
-    suspend fun getNowPlayingMovies(page: Int = 1): List<MediaItem> {
-        return api.getNowPlayingMovies(page).results.map { it.toMediaItem() }
+    suspend fun getTopRatedTvShows(page: Int = 1): List<MediaItem> {
+        return api.getTopRatedTvShows(page).results.map { it.toMediaItem() }
     }
 
-    suspend fun getTopRatedMovies(page: Int = 1): List<MediaItem> {
-        return api.getTopRatedMovies(page).results.map { it.toMediaItem() }
+    suspend fun getTvShowsByGenre(genreId: Int, page: Int = 1): List<MediaItem> {
+        return api.getTvShowsByGenre(genreId, page).results.map { it.toMediaItem() }
     }
 
-    suspend fun getUpcomingMovies(page: Int = 1): List<MediaItem> {
-        return api.getUpcomingMovies(page).results.map { it.toMediaItem() }
-    }
-
-    suspend fun getMoviesByGenre(genreId: Int, page: Int = 1): List<MediaItem> {
-        return api.getMoviesByGenre(genreId, page).results.map { it.toMediaItem() }
-    }
-
-    suspend fun getMovieDetails(movieId: Int): MediaItemDetail {
-        val dto = api.getMovieDetails(movieId)
+    suspend fun getTvShowDetails(showId: Int): MediaItemDetail {
+        val dto = api.getTvShowDetails(showId)
         return MediaItemDetail(
             id = dto.id,
-            title = dto.title,
-            originalTitle = dto.title,
+            title = dto.name,
+            originalTitle = dto.name,
             overview = dto.overview,
             posterPath = dto.posterPath?.let { "$IMAGE_BASE_URL$it" },
             backdropPath = dto.backdropPath?.let { "$IMAGE_BASE_URL$it" },
             genres = dto.genres.map { Genre(id = it.id, name = it.name) },
             homepage = null,
-            releaseDate = dto.releaseDate,
-            runtimeMinutes = dto.runtime,
+            releaseDate = dto.firstAirDate,
+            runtimeMinutes = dto.episodeRunTime.firstOrNull(),
             status = dto.status,
             tagline = dto.tagline,
             voteAverage = dto.voteAverage,
             voteCount = dto.voteCount,
             popularity = dto.popularity,
-            mediaType = MediaType.MOVIE,
+            mediaType = MediaType.TV_SHOW,
 
-            budget = dto.budget,
-            revenue = dto.revenue,
-            imdbId = dto.imdbId,
+            numberOfSeasons = dto.numberOfSeasons,
+            numberOfEpisodes = dto.numberOfEpisodes,
+            lastAirDate = dto.lastAirDate
         )
     }
 
@@ -70,11 +61,11 @@ class MovieRepository @Inject constructor(private val api: TmdbApiService) {
      * from `data.model` (which is supposed to be local).
      *
      * This causes the API layer to depend on the domain layer.
-     * There is a similar private extension in the TvShowRepository
+     * There is a similar private extension in the MovieRepository
      */
-    private fun com.cross19xx.filmnest.data.remote.dto.MovieDto.toMediaItem() = MediaItem(
+    private fun com.cross19xx.filmnest.data.remote.dto.TvShowDto.toMediaItem() = MediaItem(
         id = id,
-        title = title,
+        title = name,
         overview = overview,
         posterPath = posterPath?.let { "$IMAGE_BASE_URL$it" },
         backdropPath = backdropPath?.let { "$IMAGE_BASE_URL$it" },
@@ -83,6 +74,6 @@ class MovieRepository @Inject constructor(private val api: TmdbApiService) {
         voteCount = voteCount,
         genreIds = genreIds,
         popularity = popularity,
-        mediaType = MediaType.MOVIE
+        mediaType = MediaType.TV_SHOW,
     )
 }

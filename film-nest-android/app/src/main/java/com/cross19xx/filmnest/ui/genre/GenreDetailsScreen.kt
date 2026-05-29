@@ -23,13 +23,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.cross19xx.filmnest.R
 import com.cross19xx.filmnest.components.ErrorDisplay
-import com.cross19xx.filmnest.components.MovieCard
+import com.cross19xx.filmnest.components.MediaCard
+import com.cross19xx.filmnest.data.model.MediaType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GenreDetailsScreen(
     uiState: GenreDetailsUiState,
-    onViewMovieDetails: (movieId: Int) -> Unit,
+    onViewMediaDetails: (mediaId: Int, mediaType: MediaType) -> Unit,
     onBackPressed: () -> Unit,
 ) {
     Scaffold(
@@ -83,13 +84,13 @@ fun GenreDetailsScreen(
                         columns = GridCells.Fixed(2)
                     ) {
                         items(
-                            items = uiState.movies,
+                            items = uiState.mediaItems,
                             key = { it.id },
                             contentType = { "movies_by_${uiState.genre.name}" }
-                        ) { movie ->
-                            MovieCard(
-                                movie = movie,
-                                onMoviePressed = onViewMovieDetails,
+                        ) { media ->
+                            MediaCard(
+                                media = media,
+                                onMediaPressed = onViewMediaDetails
                             )
                         }
                     }

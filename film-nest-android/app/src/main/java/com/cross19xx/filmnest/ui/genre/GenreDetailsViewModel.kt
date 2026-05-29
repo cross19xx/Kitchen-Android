@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.cross19xx.filmnest.data.repository.GenreRepository
 import com.cross19xx.filmnest.data.repository.MovieRepository
+import com.cross19xx.filmnest.data.repository.TvShowRepository
 import com.cross19xx.filmnest.navigation.GenreDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class GenreDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val movieRepository: MovieRepository,
+    private val tvShowRepository: TvShowRepository,
     private val genreRepository: GenreRepository,
 ) : ViewModel() {
 
@@ -37,10 +39,13 @@ class GenreDetailsViewModel @Inject constructor(
             try {
                 coroutineScope {
                     val movies = async { movieRepository.getMoviesByGenre(genreId) }
+                    val tvShows = async { tvShowRepository.getTvShowsByGenre(genreId) }
+
                     val genre = async { genreRepository.getGenre(genreId) }
 
+
                     _uiState.value = GenreDetailsUiState.Success(
-                        movies = movies.await(),
+                        mediaItems = (movies.await() + tvShows.await()).sortedBy { it.title },
                         genre = genre.await()
                     )
                 }
