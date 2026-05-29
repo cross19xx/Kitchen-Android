@@ -51,7 +51,6 @@ class HomeViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
                 _uiState.value = HomeUiState.Error(e.message ?: "Unknown error")
             }
         }

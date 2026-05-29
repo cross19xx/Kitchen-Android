@@ -38,7 +38,6 @@ fun MediaCard(
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .clickable {
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                println(media)
                 onMediaPressed(media.id, media.mediaType)
             }
     ) {

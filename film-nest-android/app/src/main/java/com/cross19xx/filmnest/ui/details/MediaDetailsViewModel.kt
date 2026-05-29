@@ -38,8 +38,6 @@ class MediaDetailsViewModel @Inject constructor(
     }
 
     private fun loadMovieDetails() {
-        println("$mediaId and media type $mediaType")
-
         viewModelScope.launch {
             try {
                 val media = if (mediaType == MediaType.MOVIE) {
@@ -50,7 +48,6 @@ class MediaDetailsViewModel @Inject constructor(
 
                 _uiState.value = MediaDetailsUiState.Success(media)
             } catch (e: Exception) {
-                e.printStackTrace()
                 _uiState.value = MediaDetailsUiState.Error(e.message ?: "Unknown error")
             }
         }

@@ -12,7 +12,7 @@ data class MovieDetailDto(
     @SerializedName("release_date") val releaseDate: String?,
     @SerializedName("vote_average") val voteAverage: Double,
     @SerializedName("vote_count") val voteCount: Int,
-    @SerializedName("imdb_id") val imdbId: String,
+    @SerializedName("imdb_id") val imdbId: String?,
     val runtime: Int?,
     val budget: Long,
     val revenue: Long,

@@ -53,15 +53,15 @@ class TvShowRepository @Inject constructor(private val api: TmdbApiService) {
 
     /**
      * `toMediaItem` extension
-     * This method was not placed inside the `MovieDto` because it would break the separation
+     * This method was not placed inside the `TvShowDto` because it would break the separation
      * between layers.
      *
-     * `MovieDto` lives inside the `data.remote.dto` — who's only job is to represent the TMDB JSON shape.
-     * If we were to put the `toMovie` inside it, the `MovieDto` needs to import and know about the `Movie`
+     * `TvShowDto` lives inside the `data.remote.dto` — whose only job is to represent the TMDB JSON shape.
+     * If we were to put `toMediaItem` inside it, the `TvShowDto` needs to import and know about `MediaItem`
      * from `data.model` (which is supposed to be local).
      *
      * This causes the API layer to depend on the domain layer.
-     * There is a similar private extension in the MovieRepository
+     * There is a similar private extension in the MovieRepository.
      */
     private fun com.cross19xx.filmnest.data.remote.dto.TvShowDto.toMediaItem() = MediaItem(
         id = id,
