@@ -34,8 +34,8 @@ class GenreDetailsViewModel @Inject constructor(
 
     private fun loadMoviesByGenre() {
         viewModelScope.launch {
-            coroutineScope { // Trying out the coroutine scope because if one fails, all must fail
-                try {
+            try {
+                coroutineScope {
                     val movies = async { movieRepository.getMoviesByGenre(genreId) }
                     val genre = async { genreRepository.getGenre(genreId) }
 
@@ -43,9 +43,9 @@ class GenreDetailsViewModel @Inject constructor(
                         movies = movies.await(),
                         genre = genre.await()
                     )
-                } catch (e: Exception) {
-                    _uiState.value = GenreDetailsUiState.Error(e.message ?: "Unknown error")
                 }
+            } catch (e: Exception) {
+                _uiState.value = GenreDetailsUiState.Error(e.message ?: "Unknown error")
             }
         }
     }
