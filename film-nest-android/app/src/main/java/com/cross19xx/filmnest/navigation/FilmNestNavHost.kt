@@ -8,13 +8,14 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.cross19xx.filmnest.ui.details.MovieDetailsScreen
 import com.cross19xx.filmnest.ui.details.MovieDetailsViewModel
+import com.cross19xx.filmnest.ui.genre.GenreDetailsScreen
+import com.cross19xx.filmnest.ui.genre.GenreDetailsViewModel
 import com.cross19xx.filmnest.ui.home.HomeScreen
 import com.cross19xx.filmnest.ui.home.HomeViewModel
 import com.cross19xx.filmnest.ui.settings.SettingsScreen
@@ -53,6 +54,9 @@ fun FilmNestNavHost(
                 onViewMovieDetails = { movieId ->
                     navController.navigate(MovieDetails(movieId))
                 },
+                onViewGenreDetails = { genreId ->
+                    navController.navigate(GenreDetails(genreId))
+                },
                 onViewSettings = { navController.navigate(Settings) },
             )
         }
@@ -64,6 +68,19 @@ fun FilmNestNavHost(
             MovieDetailsScreen(
                 uiState = uiState,
                 onBackPressed = { handleBackPressed() }
+            )
+        }
+
+        composable<GenreDetails> {
+            val viewModel: GenreDetailsViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+            GenreDetailsScreen(
+                uiState = uiState,
+                onBackPressed = { handleBackPressed() },
+                onViewMovieDetails = { movieId ->
+                    navController.navigate(MovieDetails(movieId))
+                }
             )
         }
 

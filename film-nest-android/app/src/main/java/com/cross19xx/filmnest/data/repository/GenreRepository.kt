@@ -11,4 +11,14 @@ class GenreRepository @Inject constructor(private val api: TmdbApiService) {
             Genre(id = dto.id, name = dto.name)
         }
     }
+
+    suspend fun getGenre(genreId: Int): Genre {
+        val genresDto = api.getGenres()
+        val genreDto = genresDto.genres.find { it.id == genreId }
+
+        if (genreDto == null) {
+            return Genre(id = genreId, name = "Unknown")
+        }
+        return Genre(id = genreDto.id, name = genreDto.name)
+    }
 }

@@ -1,7 +1,6 @@
 package com.cross19xx.filmnest.ui.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,6 +56,7 @@ data class FeedItem(
 fun HomeScreen(
     uiState: HomeUiState,
     onViewMovieDetails: (movieId: Int) -> Unit,
+    onViewGenreDetails: (genreId: Int) -> Unit,
     onViewSettings: () -> Unit
 ) {
 
@@ -119,7 +120,10 @@ fun HomeScreen(
                         }
 
                         item(key = "categories", contentType = "category_list") {
-                            GenresRow(uiState.genres)
+                            GenresRow(
+                                genres = uiState.genres,
+                                onViewGenreDetails
+                            )
                         }
 
                         items(
@@ -211,7 +215,10 @@ fun BannerSection() {
 }
 
 @Composable
-fun GenresRow(genres: List<Genre>) {
+fun GenresRow(
+    genres: List<Genre>,
+    onViewGenreDetails: (genreId: Int) -> Unit,
+) {
     if (genres.isEmpty()) return
 
     Column(modifier = Modifier.padding(vertical = 12.dp)) {
@@ -236,16 +243,8 @@ fun GenresRow(genres: List<Genre>) {
                 key = { it.id },
                 contentType = { "genres_card" }
             ) { genre ->
-                Box(
-                    modifier = Modifier
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.surfaceDim,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .clip(RoundedCornerShape(16.dp))
-
-                        .padding(vertical = 8.dp, horizontal = 16.dp)
+                OutlinedButton(
+                    onClick = { onViewGenreDetails(genre.id) }
                 ) {
                     Text(
                         text = genre.name,

@@ -57,7 +57,7 @@ fun SettingsScreen(
                     IconButton(onClick = onBackPressed) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 }

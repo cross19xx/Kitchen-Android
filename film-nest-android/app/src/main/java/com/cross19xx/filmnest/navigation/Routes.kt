@@ -10,3 +10,7 @@ data class MovieDetails(val movieId: Int)
 
 @Serializable
 object Settings
+
+
+@Serializable
+data class GenreDetails(val genreId: Int)
