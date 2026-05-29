@@ -1,22 +1,24 @@
 package com.cross19xx.filmnest.ui.details
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -26,6 +28,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -34,6 +39,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -79,92 +85,126 @@ fun MovieDetailsScreen(
             }
 
             is MovieDetailsUiState.Success -> {
+                val scrollState = rememberScrollState()
                 val movie = uiState.movie
                 val releaseDate = DateUtils.formatDate(
                     input = movie.releaseDate,
                     outputFormat = "EEEE, MMMM dd, yyyy"
                 )
 
-                Column(
+                val bannerHeightDp = 352.dp
+                val bannerHeightPx = with(LocalDensity.current) { bannerHeightDp.toPx() }
+                val pastBanner by remember {
+                    derivedStateOf { scrollState.value > bannerHeightPx }
+                }
+                val topBarColor by animateColorAsState(
+                    targetValue = if (pastBanner) MaterialTheme.colorScheme.background
+                    else Color.Transparent,
+                    label = "topBarBackground"
+                )
+
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    MovieBanner(movie, onBackPressed = onBackPressed)
-
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(scrollState)
                     ) {
-                        Text(
-                            text = movie.title,
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.displaySmall,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 20.sp,
-                            lineHeight = 28.sp,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        MovieBanner(movie)
 
-                        // Description row (might explore using a grid later)
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 16.dp)
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.padding(16.dp)
                         ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.weight(1f)
+                            Text(
+                                text = movie.title,
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.displaySmall,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 20.sp,
+                                lineHeight = 28.sp,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 16.dp)
                             ) {
-                                MovieDescription(
-                                    label = stringResource(R.string.rating),
-                                    value = String.format("%.1f", movie.voteAverage)
-                                )
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    MovieDescription(
+                                        label = stringResource(R.string.rating),
+                                        value = String.format("%.1f", movie.voteAverage)
+                                    )
+                                }
+
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    MovieDescription(
+                                        label = stringResource(R.string.runtime),
+                                        value = "${movie.runtime} min",
+                                    )
+                                }
+
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    MovieDescription(
+                                        label = "Status",
+                                        value = movie.status,
+                                    )
+                                }
                             }
 
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                MovieDescription(
-                                    label = stringResource(R.string.runtime),
-                                    value = "${movie.runtime} min",
-                                )
-                            }
+                            Text(
+                                text = movie.overview,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(bottom = 24.dp)
+                            )
 
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                MovieDescription(
-                                    label = "Status",
-                                    value = movie.status,
-                                )
+                            if (!releaseDate.isNullOrBlank()) {
+                                Column {
+                                    Text(
+                                        text = stringResource(R.string.release_date),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                    Text(releaseDate)
+                                }
                             }
                         }
+                    }
 
-                        // Overview
-                        Text(
-                            text = movie.overview,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(bottom = 24.dp)
-                        )
-
-                        // Footnote
-                        if (!releaseDate.isNullOrBlank()) {
-                            Column {
-                                Text(
-                                    text = stringResource(R.string.release_date),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 14.sp,
-                                    color = MaterialTheme.colorScheme.onBackground
-
-                                )
-                                Text(releaseDate)
-                            }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(topBarColor)
+                            .statusBarsPadding()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        OutlinedIconButton(
+                            onClick = onBackPressed,
+                            colors = IconButtonDefaults.outlinedIconButtonColors(
+                                containerColor = Color.White.copy(alpha = 0.5f),
+                                contentColor = Color.Black.copy(alpha = 0.8f)
+                            )
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_arrow_back),
+                                contentDescription = stringResource(R.string.back),
+                            )
                         }
-
                     }
                 }
             }
@@ -173,9 +213,7 @@ fun MovieDetailsScreen(
 }
 
 @Composable
-fun MovieBanner(movie: MovieDetail, onBackPressed: () -> Unit) {
-    val topPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-
+fun MovieBanner(movie: MovieDetail) {
     val backdropUrl = movie.backdropUrl ?: movie.posterUrl
 
     val backdropHeight = 320.dp
@@ -186,7 +224,6 @@ fun MovieBanner(movie: MovieDetail, onBackPressed: () -> Unit) {
             .fillMaxWidth()
             .height(backdropHeight + offset)
     ) {
-        // Backdrop container with clipping
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -209,7 +246,6 @@ fun MovieBanner(movie: MovieDetail, onBackPressed: () -> Unit) {
             }
         }
 
-        // Poster image floating over the bottom edge
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -236,23 +272,6 @@ fun MovieBanner(movie: MovieDetail, onBackPressed: () -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(8.dp))
-            )
-        }
-
-        OutlinedIconButton(
-            onClick = onBackPressed,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .offset(x = 16.dp, y = topPadding + 8.dp),
-            colors = IconButtonDefaults.outlinedIconButtonColors(
-                containerColor = Color.White.copy(alpha = 0.5f),
-                contentColor = Color.Black.copy(alpha = 0.8f)
-            )
-
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_arrow_back),
-                contentDescription = stringResource(R.string.back),
             )
         }
     }
