@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -153,5 +154,31 @@ class HomeViewModelTest {
             val error = expectMostRecentItem() as HomeUiState.Error
             assertEquals("Unknown error", error.message)
         }
+    }
+
+    @Test
+    fun `refresh failure emits ShowMessage event and keeps Success state`() = runTest {
+        // init succeeds → uiState becomes Success
+        coEvery { movieRepository.getPopularMovies() } returns emptyList()
+        coEvery { tvShowRepository.getPopularTvShows() } returns emptyList()
+        coEvery { movieRepository.getNowPlayingMovies() } returns emptyList()
+        coEvery { movieRepository.getTopRatedMovies() } returns emptyList()
+        coEvery { tvShowRepository.getTopRatedTvShows() } returns emptyList()
+        coEvery { movieRepository.getUpcomingMovies() } returns emptyList()
+        coEvery { genreRepository.getGenres() } returns emptyList()
+
+        val viewModel = HomeViewModel(genreRepository, movieRepository, tvShowRepository)
+
+        // re-stub so the refresh fails
+        coEvery { movieRepository.getPopularMovies() } throws RuntimeException("Could not refresh")
+
+        viewModel.events.test {
+            viewModel.refresh()
+            val event = awaitItem() as HomeEvent.ShowMessage
+            assertEquals("Could not refresh", event.message)
+        }
+
+        // crucially: still Success, not Error
+        assertTrue(viewModel.uiState.value is HomeUiState.Success)
     }
 }
