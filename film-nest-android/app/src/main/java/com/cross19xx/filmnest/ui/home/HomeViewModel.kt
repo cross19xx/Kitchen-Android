@@ -7,9 +7,11 @@ import com.cross19xx.filmnest.data.repository.MovieRepository
 import com.cross19xx.filmnest.data.repository.TvShowRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import javax.inject.Inject
@@ -24,11 +26,22 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    private val _events = Channel<HomeEvent>()
+    val events = _events.receiveAsFlow()
+
     init {
         loadMovies()
     }
 
-    private fun loadMovies() {
+    fun refresh() {
+        _isRefreshing.value = true
+        loadMovies(isRefresh = true)
+    }
+
+    private fun loadMovies(isRefresh: Boolean = false) {
         viewModelScope.launch {
             try {
                 supervisorScope {
@@ -51,7 +64,16 @@ class HomeViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                _uiState.value = HomeUiState.Error(e.message ?: "Unknown error")
+                if (isRefresh) {
+                    _events.send(
+                        HomeEvent.ShowMessage(e.message ?: "Could not refresh")
+                    )
+                } else {
+                    _uiState.value = HomeUiState.Error(e.message ?: "Unknown error")
+                }
+
+            } finally {
+                if (isRefresh) _isRefreshing.value = false
             }
         }
     }

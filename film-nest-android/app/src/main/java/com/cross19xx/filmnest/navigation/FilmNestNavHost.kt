@@ -47,14 +47,18 @@ fun FilmNestNavHost(
 
         composable<Home> {
             val viewModel: HomeViewModel = hiltViewModel()
+
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
             HomeScreen(
+                events = viewModel.events,
+                isRefreshing = isRefreshing,
                 uiState = uiState,
+                onRefresh = { viewModel.refresh() },
                 onViewMediaDetails = { mediaId, mediaType ->
                     navController.navigate(MediaDetails(mediaId, mediaType))
                 },
-
                 onViewGenreDetails = { genreId ->
                     navController.navigate(GenreDetails(genreId))
                 },

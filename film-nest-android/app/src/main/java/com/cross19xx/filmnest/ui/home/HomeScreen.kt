@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -20,8 +21,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,7 +38,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -42,6 +49,7 @@ import com.cross19xx.filmnest.components.MediaCard
 import com.cross19xx.filmnest.data.model.Genre
 import com.cross19xx.filmnest.data.model.MediaItem
 import com.cross19xx.filmnest.data.model.MediaType
+import kotlinx.coroutines.flow.Flow
 
 data class FeedItem(
     val title: String,
@@ -52,13 +60,44 @@ data class FeedItem(
 
 @Composable
 fun HomeScreen(
+    events: Flow<HomeEvent>,
+    isRefreshing: Boolean,
     uiState: HomeUiState,
+    onRefresh: () -> Unit,
     onViewMediaDetails: (mediaId: Int, mediaType: MediaType) -> Unit,
     onViewGenreDetails: (genreId: Int) -> Unit,
     onViewSettings: () -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val retryText = stringResource(R.string.retry)
 
-    Scaffold { innerPadding ->
+    LaunchedEffect(Unit) {
+        events.collect { event ->
+            when (event) {
+                is HomeEvent.ShowMessage -> {
+                    val snackbarResult = snackbarHostState.showSnackbar(
+                        message = event.message,
+                        actionLabel = retryText,
+                        duration = SnackbarDuration.Short
+                    )
+
+                    if (snackbarResult == SnackbarResult.ActionPerformed) {
+                        onRefresh()
+                    }
+                }
+            }
+        }
+    }
+
+
+    Scaffold(
+        topBar = {
+            if (uiState is HomeUiState.Success) {
+                HomeHeader(onViewSettings = onViewSettings)
+            }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+    ) { innerPadding ->
         when (uiState) {
             is HomeUiState.Loading -> {
                 Box(
@@ -101,18 +140,14 @@ fun HomeScreen(
                     )
                 )
 
-                Column(
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    onRefresh = onRefresh,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    HomeHeader(topPadding = 0.dp, onViewSettings)
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    ) {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
                         item(key = "now_playing", contentType = "featured") {
                             BannerSection()
                         }
@@ -149,14 +184,15 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeHeader(topPadding: Dp, onViewSettings: () -> Unit) {
+fun HomeHeader(onViewSettings: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .statusBarsPadding()
             .padding(
-                top = topPadding,
+                top = 0.dp,
                 start = 16.dp,
-                end = 16.dp,
+                end = 0.dp, // the button is large enough to cover the padding
                 bottom = 8.dp
             ),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
