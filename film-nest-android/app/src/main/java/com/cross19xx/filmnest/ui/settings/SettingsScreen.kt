@@ -36,17 +36,21 @@ import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.unit.dp
 import com.cross19xx.filmnest.BuildConfig
 import com.cross19xx.filmnest.R
+import com.cross19xx.filmnest.data.model.AppLanguage
 import com.cross19xx.filmnest.data.model.ThemeMode
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
+    currentLanguage: AppLanguage,
     themeMode: ThemeMode,
     onBackPressed: () -> Unit,
+    onLanguageSelected: (AppLanguage) -> Unit,
     onThemeModeChanged: (ThemeMode) -> Unit,
 ) {
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
     var showAboutSheet by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -97,6 +101,18 @@ fun SettingsScreen(
                 modifier = Modifier.clickable { showThemeDialog = true }
             )
 
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.language)) },
+                supportingContent = { Text(currentLanguage.displayName()) },
+                leadingContent = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_search), // TODO: Change to ic_language
+                        contentDescription = null,
+                    )
+                },
+                modifier = Modifier.clickable { showLanguageDialog = true }
+            )
+
             // Info section
             Text(
                 text = "Info",
@@ -143,10 +159,111 @@ fun SettingsScreen(
         )
     }
 
+    if (showLanguageDialog) {
+        LanguageSelectionDialog(
+            currentLanguage = currentLanguage,
+            onLanguageSelected = {
+                onLanguageSelected(it)
+                showLanguageDialog = false
+            },
+            onDismiss = { showLanguageDialog = false }
+        )
+    }
+
     // About bottom sheet
     if (showAboutSheet) {
         AboutBottomSheet(onDismiss = { showAboutSheet = false })
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AboutBottomSheet(onDismiss: () -> Unit) {
+    val sheetState = rememberModalBottomSheetState()
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState
+    ) {
+        val description = stringResource(R.string.about_description).trimIndent()
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_dove),
+                contentDescription = "Film Nest Logo",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp)
+            )
+            Text(
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Text(
+                text = stringResource(R.string.by_author),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Text(
+                text = AnnotatedString.fromHtml(description),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun AppLanguage.displayName(): String = when (this) {
+    AppLanguage.SYSTEM -> stringResource(R.string.system)
+    AppLanguage.ENGLISH -> "English"
+    AppLanguage.FRENCH -> "Français"
+    AppLanguage.GERMAN -> "Deutsch"
+}
+
+@Composable
+private fun LanguageSelectionDialog(
+    currentLanguage: AppLanguage,
+    onLanguageSelected: (AppLanguage) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.language)) },
+        text = {
+            Column {
+                AppLanguage.entries.forEach { language ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onLanguageSelected(language) }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = language == currentLanguage,
+                            onClick = { onLanguageSelected(language) }
+                        )
+                        Text(
+                            text = language.displayName(),
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
 }
 
 @Composable
@@ -192,47 +309,4 @@ private fun ThemeSelectionDialog(
             }
         }
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun AboutBottomSheet(onDismiss: () -> Unit) {
-    val sheetState = rememberModalBottomSheetState()
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = sheetState
-    ) {
-        val description = stringResource(R.string.about_description).trimIndent()
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_dove),
-                contentDescription = "Film Nest Logo",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(28.dp)
-            )
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Text(
-                text = stringResource(R.string.by_author),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            Text(
-                text = AnnotatedString.fromHtml(description),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
 }

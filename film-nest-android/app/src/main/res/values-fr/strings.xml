@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about">À propos</string>
+    <string name="an_unexpected_error_occurred_when_connecting_to_the_server">Oups, impossible de joindre le serveur pour le moment</string>
+    <string name="app_name">Film Nest</string>
+    <string name="appearance">Apparence</string>
+    <string name="back">Retour</string>
+    <string name="by_author">par Kenneth Kwakye-Gyamfi</string>
+    <string name="cancel">Annuler</string>
+    <string name="clear_search">Effacer la recherche</string>
+    <string name="critically_acclaimed_masterpieces_of_cinema">Les pépites adorées par la critique.</string>
+    <string name="dark">Sombre</string>
+    <string name="film_nest_banner_image">Bannière Film Nest</string>
+    <string name="genres">Genres</string>
+    <string name="language">Langue</string>
+    <string name="light">Clair</string>
+    <string name="movies_tv_shows">Films/Séries</string>
+    <string name="no_results_for">Aucun résultat pour « %1$s »</string>
+    <string name="now_playing">À l\'affiche</string>
+    <string name="people">Personnes</string>
+    <string name="popular">Populaires</string>
+    <string name="rating">Note</string>
+    <string name="release_date">Date de sortie</string>
+    <string name="retry">Réessayer</string>
+    <string name="runtime">Durée</string>
+    <string name="search">Rechercher</string>
+    <string name="search_button">Bouton de recherche</string>
+    <string name="search_dots">Rechercher…</string>
+    <string name="search_for_movies_shows_and_people">Cherche des films, des séries et des gens</string>
+    <string name="see_what_the_world_is_watching_now">Découvre ce que tout le monde regarde en ce moment</string>
+    <string name="settings">Paramètres</string>
+    <string name="settings_button">Bouton des paramètres</string>
+    <string name="sneak_peek_at_upcoming_cinematic_experiences">Un avant-goût des sorties à venir.</string>
+    <string name="system">Système</string>
+    <string name="system_default">Système par défaut</string>
+    <string name="theme">Thème</string>
+    <string name="top_rated">Les mieux notés</string>
+    <string name="trending_hits_and_fan_favorites">Les hits du moment et les chouchous des fans.</string>
+    <string name="uh_oh">Oups !</string>
+    <string name="upcoming">Bientôt dispo</string>
+</resources>

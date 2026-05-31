@@ -21,6 +21,7 @@ import com.cross19xx.filmnest.ui.home.HomeViewModel
 import com.cross19xx.filmnest.ui.search.SearchScreen
 import com.cross19xx.filmnest.ui.search.SearchViewModel
 import com.cross19xx.filmnest.ui.settings.SettingsScreen
+import com.cross19xx.filmnest.utils.LocaleUtils
 import com.cross19xx.filmnest.viewmodel.ThemeViewModel
 
 private const val MOTION_DURATION = 220
@@ -94,9 +95,13 @@ fun FilmNestNavHost(
 
         composable<Settings> {
             val themeMode by themeViewModel.themeMode.collectAsStateWithLifecycle()
+            val currentLanguage = LocaleUtils.getCurrentLanguage()
+
             SettingsScreen(
+                currentLanguage = currentLanguage,
                 themeMode = themeMode,
                 onBackPressed = { handleBackPressed() },
+                onLanguageSelected = { LocaleUtils.setLanguage(it) },
                 onThemeModeChanged = { themeViewModel.setThemeMode(it) },
             )
         }
