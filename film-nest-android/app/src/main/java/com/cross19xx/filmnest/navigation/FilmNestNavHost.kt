@@ -18,6 +18,8 @@ import com.cross19xx.filmnest.ui.genre.GenreDetailsScreen
 import com.cross19xx.filmnest.ui.genre.GenreDetailsViewModel
 import com.cross19xx.filmnest.ui.home.HomeScreen
 import com.cross19xx.filmnest.ui.home.HomeViewModel
+import com.cross19xx.filmnest.ui.search.SearchScreen
+import com.cross19xx.filmnest.ui.search.SearchViewModel
 import com.cross19xx.filmnest.ui.settings.SettingsScreen
 import com.cross19xx.filmnest.viewmodel.ThemeViewModel
 
@@ -62,6 +64,7 @@ fun FilmNestNavHost(
                 onViewGenreDetails = { genreId ->
                     navController.navigate(GenreDetails(genreId))
                 },
+                onViewSearch = { navController.navigate(Search) },
                 onViewSettings = { navController.navigate(Settings) },
             )
         }
@@ -95,6 +98,23 @@ fun FilmNestNavHost(
                 themeMode = themeMode,
                 onBackPressed = { handleBackPressed() },
                 onThemeModeChanged = { themeViewModel.setThemeMode(it) },
+            )
+        }
+
+        composable<Search> {
+            val viewModel: SearchViewModel = hiltViewModel()
+
+            val query by viewModel.query.collectAsStateWithLifecycle()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+            SearchScreen(
+                query = query,
+                uiState = uiState,
+                onBackPressed = { handleBackPressed() },
+                onQueryChange = { viewModel.onQueryChange(it) },
+                onViewMediaDetails = { mediaId, mediaType ->
+                    navController.navigate(MediaDetails(mediaId, mediaType))
+                }
             )
         }
     }

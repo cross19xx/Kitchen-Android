@@ -66,6 +66,7 @@ fun HomeScreen(
     onRefresh: () -> Unit,
     onViewMediaDetails: (mediaId: Int, mediaType: MediaType) -> Unit,
     onViewGenreDetails: (genreId: Int) -> Unit,
+    onViewSearch: () -> Unit,
     onViewSettings: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -93,7 +94,10 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             if (uiState is HomeUiState.Success) {
-                HomeHeader(onViewSettings = onViewSettings)
+                HomeHeader(
+                    onViewSearch = onViewSearch,
+                    onViewSettings = onViewSettings
+                )
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -184,7 +188,10 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeHeader(onViewSettings: () -> Unit) {
+fun HomeHeader(
+    onViewSearch: () -> Unit,
+    onViewSettings: () -> Unit,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -195,7 +202,7 @@ fun HomeHeader(onViewSettings: () -> Unit) {
                 end = 0.dp, // the button is large enough to cover the padding
                 bottom = 8.dp
             ),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
 
     ) {
@@ -215,6 +222,15 @@ fun HomeHeader(onViewSettings: () -> Unit) {
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.weight(1f)
         )
+
+        IconButton(onClick = onViewSearch) {
+            Icon(
+                painterResource(R.drawable.ic_search),
+                contentDescription = stringResource(R.string.search),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp)
+            )
+        }
 
         IconButton(onClick = onViewSettings) {
             Icon(

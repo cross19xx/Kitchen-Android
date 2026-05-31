@@ -15,3 +15,6 @@ object Settings
 
 @Serializable
 data class GenreDetails(val genreId: Int)
+
+@Serializable
+object Search

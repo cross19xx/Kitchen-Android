@@ -3,6 +3,7 @@ package com.cross19xx.filmnest.data.remote
 import com.cross19xx.filmnest.data.remote.dto.GenreListResponse
 import com.cross19xx.filmnest.data.remote.dto.MovieDetailDto
 import com.cross19xx.filmnest.data.remote.dto.MovieListResponse
+import com.cross19xx.filmnest.data.remote.dto.SearchMultiResponse
 import com.cross19xx.filmnest.data.remote.dto.TvShowDetailDto
 import com.cross19xx.filmnest.data.remote.dto.TvShowListResponse
 import retrofit2.http.GET
@@ -51,4 +52,10 @@ interface TmdbApiService {
         @Query("with_genres") genreId: Int,
         @Query("page") page: Int = 1,
     ): TvShowListResponse
+
+    @GET("search/multi")
+    suspend fun searchMulti(
+        @Query("query") query: String,
+        @Query("page") page: Int = 1,
+    ): SearchMultiResponse
 }
