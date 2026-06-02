@@ -89,6 +89,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.navigation.compose)
 
+    // MediaPipe on-device text embedding
+    implementation(libs.mediapipe.tasks.text)
+
     // Hilt (Dependency Injection)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
@@ -98,17 +101,29 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
+    // Room (vector store)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    // WorkManager + Hilt integration (corpus seed)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
+
     // Testing
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    testImplementation(libs.androidx.room.testing)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.work.testing)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.robolectric)
     testImplementation(libs.turbine)
-
 
     // Debug
     debugImplementation(libs.androidx.compose.ui.test.manifest)
